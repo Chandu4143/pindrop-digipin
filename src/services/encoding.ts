@@ -21,8 +21,8 @@ import {
   DIGIPIN_REGEX,
 } from '@/types';
 
-// Import the existing digipin library
-const digipin = require('../../../digipin/src/digipin.js');
+// Import the local DIGIPIN library
+import { getDigiPin, getLatLngFromDigiPin } from '@/lib/digipin';
 
 // Import WorldPIN module for global encoding
 import { encodeWorldPIN, decodeWorldPIN } from '@/lib/worldpin';
@@ -49,8 +49,8 @@ export function encode(coords: Coordinates, mode: Mode): EncodingResult {
 
   try {
     if (mode === 'india') {
-      // Use the existing DIGIPIN library for India mode
-      const pin = digipin.getDigiPin(latitude, longitude);
+      // Use the DIGIPIN library for India mode
+      const pin = getDigiPin(latitude, longitude);
       const gridBounds = calculateGridBounds(coords, mode);
       return {
         success: true,
@@ -101,8 +101,8 @@ export function decode(pin: string, mode: Mode): DecodingResult {
 
   try {
     if (mode === 'india') {
-      // Use the existing DIGIPIN library for India mode
-      const result = digipin.getLatLngFromDigiPin(normalizedPin);
+      // Use the DIGIPIN library for India mode
+      const result = getLatLngFromDigiPin(normalizedPin);
       const coordinates: Coordinates = {
         latitude: parseFloat(result.latitude),
         longitude: parseFloat(result.longitude),
