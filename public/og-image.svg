@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Grid pattern overlay -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="rgba(255,255,255,0.03)"/>
+  <circle cx="1100" cy="530" r="250" fill="rgba(255,255,255,0.03)"/>
+  <circle cx="900" cy="100" r="150" fill="rgba(255,255,255,0.02)"/>
+  
+  <!-- Map pin icon -->
+  <g transform="translate(150, 180)" filter="url(#shadow)">
+    <circle cx="120" cy="120" r="100" fill="rgba(255,255,255,0.15)"/>
+    <path d="M120 40c-44 0-80 36-80 80 0 60 80 140 80 140s80-80 80-140c0-44-36-80-80-80zm0 108c-16 0-28-12-28-28s12-28 28-28 28 12 28 28-12 28-28 28z" fill="url(#pinGradient)" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Main title - DIGIPIN prominent -->
+  <text x="420" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="88" font-weight="800" fill="white" filter="url(#glow)">DIGIPIN</text>
+  
+  <!-- Subtitle -->
+  <text x="420" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="500" fill="rgba(255,255,255,0.9)">Finder &amp; Generator</text>
+  
+  <!-- Tagline -->
+  <text x="420" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="rgba(255,255,255,0.7)">India's Digital Address System</text>
+  
+  <!-- Divider line -->
+  <rect x="420" y="335" width="100" height="3" rx="1.5" fill="rgba(255,255,255,0.4)"/>
+  
+  <!-- Features -->
+  <text x="420" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="rgba(255,255,255,0.85)">✓ Generate DIGIPIN for any location</text>
+  <text x="420" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="rgba(255,255,255,0.85)">✓ Convert DIGIPIN to coordinates</text>
+  <text x="420" y="455" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="rgba(255,255,255,0.85)">✓ Share via QR code &amp; links - FREE</text>
+  
+  <!-- URL -->
+  <rect x="420" y="495" width="340" height="46" rx="23" fill="rgba(255,255,255,0.15)"/>
+  <text x="440" y="525" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="500" fill="white">pindrop-digipin.vercel.app</text>
+  
+  <!-- PinDrop branding -->
+  <text x="1080" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)" text-anchor="end">by PinDrop</text>
+</svg>

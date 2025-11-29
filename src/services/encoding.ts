@@ -22,7 +22,6 @@ import {
 } from '@/types';
 
 // Import the existing digipin library
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const digipin = require('../../../digipin/src/digipin.js');
 
 // Import WorldPIN module for global encoding

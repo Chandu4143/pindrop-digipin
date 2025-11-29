@@ -3,6 +3,6 @@
     "next/core-web-vitals"
   ],
   "rules": {
-    "@typescript-eslint/no-require-imports": "off"
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

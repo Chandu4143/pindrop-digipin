@@ -10,7 +10,6 @@ import { INDIA_BOUNDS, WORLD_BOUNDS, VALID_CHARS, Coordinates, Mode } from '@/ty
 import { encodeWorldPIN, decodeWorldPIN, validateWorldPIN } from '@/lib/worldpin';
 
 // Import the digipin library directly for comparison in mode-specific test
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const digipin = require('../../../digipin/src/digipin.js');
 
 /**
