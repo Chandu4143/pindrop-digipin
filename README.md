@@ -92,7 +92,7 @@ PinDrop is a free, open-source web application that helps you discover, generate
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/pindrop.git
+   git clone https://github.com/Chandu4143/pindrop.git
    cd pindrop
    ```
 
@@ -106,7 +106,7 @@ PinDrop is a free, open-source web application that helps you discover, generate
    cp .env.example .env.local
    ```
    
-   Edit `.env.local` if you need to configure any API keys.
+   Edit `.env.local` if you need to configure any API keys. (no APIs for now, but let it be there for the future)
 
 4. **Run the development server**
    ```bash
