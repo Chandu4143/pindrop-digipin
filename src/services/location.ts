@@ -1,6 +1,6 @@
 /**
  * Location Service for PinDrop
- * Handles browser geolocation with proper error handling
+ * Handles browser geolocation with proper error handling and IP fallback
  * 
  * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5
  */
@@ -14,9 +14,78 @@ import {
 /** Geolocation options for the browser API */
 const GEOLOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
-  timeout: 10000, // 10 seconds
+  timeout: 15000, // 15 seconds
   maximumAge: 60000, // 1 minute cache
 };
+
+/**
+ * Fallback: Get approximate location from IP address
+ * Uses multiple free IP geolocation APIs with fallbacks
+ */
+async function getLocationFromIP(): Promise<GeolocationResult> {
+  // List of IP geolocation services to try (in order)
+  const services = [
+    {
+      url: 'https://ipapi.co/json/',
+      extract: (data: Record<string, unknown>) => ({
+        lat: data.latitude as number,
+        lon: data.longitude as number,
+      }),
+    },
+    {
+      url: 'https://ipwho.is/',
+      extract: (data: Record<string, unknown>) => ({
+        lat: data.latitude as number,
+        lon: data.longitude as number,
+      }),
+    },
+    {
+      url: 'https://freeipapi.com/api/json',
+      extract: (data: Record<string, unknown>) => ({
+        lat: data.latitude as number,
+        lon: data.longitude as number,
+      }),
+    },
+  ];
+
+  for (const service of services) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(service.url, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        const coords = service.extract(data);
+
+        if (coords.lat && coords.lon && !isNaN(coords.lat) && !isNaN(coords.lon)) {
+          console.log(`IP location found via ${service.url}:`, coords);
+          return {
+            success: true,
+            coordinates: {
+              latitude: coords.lat,
+              longitude: coords.lon,
+            },
+          };
+        }
+      }
+    } catch (err) {
+      console.log(`IP service ${service.url} failed:`, err);
+      // Continue to next service
+    }
+  }
+
+  console.log('All IP geolocation services failed');
+  return { success: false, error: 'position_unavailable' };
+}
 
 /**
  * Maps browser GeolocationPositionError codes to our error types
@@ -38,6 +107,7 @@ function mapGeolocationError(error: GeolocationPositionError): GeolocationError 
 
 /**
  * Gets the user's current location using the browser Geolocation API
+ * Falls back to IP-based location if GPS fails
  * @returns Promise<GeolocationResult> with coordinates or error
  * 
  * Requirements:
@@ -47,7 +117,35 @@ function mapGeolocationError(error: GeolocationPositionError): GeolocationError 
  * - 3.4: Handle permission_denied error
  * - 3.5: Handle timeout and position_unavailable errors
  */
-export function getCurrentLocation(): Promise<GeolocationResult> {
+export async function getCurrentLocation(): Promise<GeolocationResult> {
+  // First try browser geolocation
+  const browserResult = await getBrowserLocation();
+  
+  if (browserResult.success) {
+    return browserResult;
+  }
+  
+  // If permission denied, don't try IP fallback - user explicitly denied
+  if (browserResult.error === 'permission_denied') {
+    return browserResult;
+  }
+  
+  // Try IP-based fallback for position_unavailable or timeout
+  console.log('Browser geolocation failed, trying IP fallback...');
+  const ipResult = await getLocationFromIP();
+  
+  if (ipResult.success) {
+    return ipResult;
+  }
+  
+  // Return original browser error if IP fallback also fails
+  return browserResult;
+}
+
+/**
+ * Gets location from browser Geolocation API only
+ */
+function getBrowserLocation(): Promise<GeolocationResult> {
   return new Promise((resolve) => {
     // Check if geolocation is supported
     if (!navigator?.geolocation) {
@@ -93,11 +191,11 @@ export function getGeolocationErrorMessage(error: GeolocationError): string {
     case 'permission_denied':
       return 'Location access denied. Please enable location permissions in your browser settings.';
     case 'position_unavailable':
-      return 'Unable to determine your location. Please try again or enter coordinates manually.';
+      return 'Unable to determine your location. Try searching for a place name instead, or click on the map.';
     case 'timeout':
-      return 'Location request timed out. Please try again.';
+      return 'Location request timed out. Try searching for a place name or clicking on the map.';
     default:
-      return 'An unknown error occurred while getting your location.';
+      return 'Could not get your location. Try searching for a place name or clicking on the map.';
   }
 }
 

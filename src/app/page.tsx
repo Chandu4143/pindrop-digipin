@@ -48,9 +48,20 @@ export default function Home() {
   }, [showToast]);
 
   // Derived state - use proper encoding service
-  const digipin = selectedLocation
-    ? encode({ latitude: selectedLocation.lat, longitude: selectedLocation.lng }, mode === 'DIGIPIN' ? 'india' : 'world').pin || ''
-    : '';
+  const encodingResult = selectedLocation
+    ? encode({ latitude: selectedLocation.lat, longitude: selectedLocation.lng }, mode === 'DIGIPIN' ? 'india' : 'world')
+    : null;
+  const digipin = encodingResult?.pin || '';
+  
+  // Show error if encoding failed
+  useEffect(() => {
+    if (selectedLocation && encodingResult && !encodingResult.success && encodingResult.error) {
+      // If DIGIPIN fails due to bounds, suggest WorldPIN
+      if (mode === 'DIGIPIN' && encodingResult.error.includes('outside')) {
+        showToast('Location outside India. Switch to WorldPIN for global locations.', 'warning');
+      }
+    }
+  }, [selectedLocation, encodingResult, mode, showToast]);
   
   // Build shareable URL
   const shareableUrl = digipin 
@@ -58,10 +69,19 @@ export default function Home() {
     : (typeof window !== 'undefined' ? window.location.origin : '');
 
   const handleLocationSelect = useCallback((lat: number, lng: number) => {
+    // Check if location is within India bounds
+    const isInIndia = lat >= 2.5 && lat <= 38.5 && lng >= 63.5 && lng <= 99.5;
+    
+    // Auto-switch to WorldPIN if outside India and currently in DIGIPIN mode
+    if (!isInIndia && mode === 'DIGIPIN') {
+      setMode('WorldPIN');
+      showToast('Switched to WorldPIN (location outside India)', 'info');
+    }
+    
     setSelectedLocation({ lat, lng });
     setIsSidebarOpen(true);
     setShowHero(false);
-  }, []);
+  }, [mode, showToast]);
 
   const handleSearch = async (query: string) => {
     setIsLoading(true);
